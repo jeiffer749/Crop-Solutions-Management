@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Solutions Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base styles for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            padding: 0; /* Remove padding for full-width layout */
+            margin: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        /* Custom scrollbar for data display areas */
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scrollable-content::-webkit-scrollbar-track {
+            background: #e5e7eb; /* Light gray track */
+            border-radius: 10px;
+        }
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background: #9ca3af; /* Darker gray thumb */
+            border-radius: 10px;
+        }
+        .scrollable-content::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* Even darker gray on hover */
+        }
+
+        /* Styling for the admin login page background */
+        #adminLoginPage {
+            background-image: url('https://placehold.co/1920x1080/A0D468/FFFFFF?text=CROPS'); /* Placeholder image */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            filter: grayscale(20%); /* Slightly desaturate image for better contrast */
+            transition: filter 0.5s ease-in-out;
+            width: 100vw;
+            height: 100vh;
+        }
+        /* Fade-out effect for the login page */
+        #adminLoginPage.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-out, visibility 0s 0.5s;
+        }
+        /* Style for the login form container within the login page */
+        #adminLoginPage > div {
+            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white for backdrop */
+            backdrop-filter: blur(5px); /* Subtle blur behind content */
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+
+        /* Keyframe animation for login form fade-in and scale */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Success message styling common for forms */
+        .form-success-message {
+            color: #10B981; /* Green-500 */
+            background-color: #A2FCA9; /* Green-50 */
+            border: 1px solid #34D399; /* Green-300 */
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        /* Class to show the success message */
+        .form-success-message.show {
+            opacity: 1;
+        }
+
+        /* Tab button active state styling */
+        .tab-button.active {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dashboard card specific styles */
+        .dashboard-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            border: 1px solid #e2e8f0; /* Default subtle border */
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
+            border-color: #a7f3d0; /* Light green border on hover */
+        }
+        .dashboard-card h3 {
+            color: #1a202c; /* Darker title for better contrast */
+        }
+        .dashboard-card ul li {
+            margin-bottom: 0.25rem; /* Tighter list spacing */
+        }
+        .dashboard-card ul li .font-bold {
+            font-size: 1.125rem; /* Slightly larger numbers */
+        }
+
+        /* New styles for the website-like dashboard */
+        .main-header {
+            background-color: #ffffff; /* White background for header */
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .hero-section {
+            background-image: url('https://placehold.co/1200x400/4CAF50/FFFFFF?text=Agriculture+Innovation'); /* Placeholder for hero image */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 1rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .hero-section p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .content-block-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden; /* Ensures image corners are rounded with card */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+        .content-block-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
+        }
+        .content-block-card img {
+            width: 100%;
+            height: 180px; /* Fixed height for consistency */
+            object-fit: cover;
+        }
+        .content-block-card .card-content {
+            padding: 1.5rem;
+        }
+        .content-block-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+        .content-block-card p {
+            font-size: 0.95rem;
+            color: #4b5563;
+        }
+        /* Adjusted main app padding for website look */
+        #mainApp {
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+            border: none;
+            max-width: 100vw;
+            border-radius: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #mainApp .grid {
+            padding: 2rem; /* Add padding back to content grid */
+            max-width: 1200px; /* Max width for content */
+            margin: 0 auto; /* Center content */
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Login Page (Initial View - positioned to cover everything) -->
+    <div id="adminLoginPage" class="fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center border border-gray-200 relative">
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-6"> Crop Solutions Management System</h2>
+            <form id="loginForm" class="space-y-4">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Login as:</label>
+                    <div class="flex justify-center space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="loginType" value="admin" class="form-radio text-blue-600" checked>
+                            <span class="ml-2 text-gray-700">Admin</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="loginType" value="user" class="form-radio text-green-600">
+                            <span class="ml-2 text-gray-700">Regular User</span>
+                        </label>
+                    </div>
+                    <!-- Message for regular user login (not implemented) -->
+                    <p id="userLoginMessage" class="text-red-600 text-sm mt-2 hidden">
+                        Regular user login is not implemented in this version, coming soon. Please log in as administrator.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="username" class="sr-only">Username</label>
+                    <input type="text" id="username" placeholder="Username" required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200">
+                </div>
+                <div>
+                    <label for="password" class="sr-only">Password or Temporary Code</label>
+                    <input type="password" id="password" placeholder="Password or Temporary Code" required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200">
+                </div>
+                <button type="submit" id="loginButton"
+                        class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                    <span id="loginButtonText">Login</span>
+                    <i id="loginSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                </button>
+            </form>
+            <p id="loginMessage" class="text-red-600 mt-4 text-sm"></p>
+            <p class="text-gray-500 text-sm mt-8">Powered by Jeiffer Kilonzo</p>
+            <p class="text-gray-500 text-sm">&copy; Crop Solutions 2025. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <!-- Main Application Interface (Hidden by default, shown after successful login) -->
+    <div id="mainApp" class="hidden flex-1">
+        <!-- Main Header mimicking Egerton's -->
+        <header class="main-header w-full px-4 py-3 flex items-center justify-between z-40 relative">
+            <div class="flex items-center">
+                <!-- Logo area -->
+                <div class="flex items-center mr-6">
+                    <img src="https://placehold.co/40x40/006400/FFFFFF?text=CS" alt="Crop Solutions Logo" class="h-10 w-10 mr-2 rounded-full">
+                    <span class="text-xl font-bold text-gray-800 hidden md:block">Crop Solutions</span>
+                </div>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-gray-700 hover:text-green-600 font-medium py-2">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 font-medium py-2">About Us</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 font-medium py-2">Services</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 font-medium py-2">Insights</a>
+                    <a href="#" class="text-gray-700 hover:text-green-600 font-medium py-2">Contact</a>
+                </nav>
+            </div>
+            <!-- User Info and Logout -->
+            <div class="flex items-center space-x-4">
+                <p id="loggedInUserDisplay" class="text-sm text-gray-700 font-medium hidden sm:block">
+                    Logged in as: <span id="currentAdminName"></span>
+                </p>
+                <button id="logoutButton"
+                        class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
+                    Log Out
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section text-center w-full">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-white text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
+                    Transforming Agriculture Through Innovation
+                </h2>
+                <p class="text-white text-lg sm:text-xl mt-4">
+                    Empowering farmers with smart solutions for sustainable growth.
+                </p>
+                <button class="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105">
+                    Read More
+                </button>
+            </div>
+        </section>
+
+        <!-- Main content area (re-organized for website look) -->
+        <div class="w-full flex-1 flex flex-col items-center">
+            <!-- Global User/Session Info & Tabs -->
+            <div class="w-full max-w-6xl mx-auto my-6 px-4 py-4 bg-white shadow-lg rounded-lg border border-gray-200">
+                <p class="text-md text-gray-700 font-medium text-center">
+                    Admin Contact: <span id="currentAdminEmail"></span> | <span id="currentAdminContact"></span>
+                    <br> Session time: <span id="sessionTimerDisplay">00:00:00</span>
+                </p>
+                <!-- Tab Buttons -->
+                <div class="flex flex-wrap gap-2 justify-center lg:justify-start mt-4">
+                    <button type="button" id="tabDashboard"
+                            class="tab-button px-5 py-2 rounded-md font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 active">
+                        Dashboard
+                    </button>
+                    <button type="button" id="tabFarmerRecords"
+                            class="tab-button px-5 py-2 rounded-md font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
+                        Farmer Records
+                    </button>
+                    <button type="button" id="tabBatchEntry"
+                            class="tab-button px-5 py-2 rounded-md font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
+                        Batch Entry
+                    </button>
+                    <button type="button" id="tabOfflineEntry"
+                            class="tab-button px-5 py-2 rounded-md font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
+                        Offline Entry
+                    </button>
+                    <button type="button" id="tabReportManagement"
+                            class="tab-button px-5 py-2 rounded-md font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200">
+                        Report Management
+                    </button>
+                    <!-- This tab is only visible to the 'jeiffer' admin -->
+                    <button type="button" id="tabRegisterAdmin"
+                            class="tab-button px-5 py-2 rounded-md font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 hidden">
+                        Register New Admin
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+                <!-- Dashboard Content Section -->
+                <section id="contentDashboard" class="col-span-1 lg:col-span-2 bg-gray-50 p-8 rounded-lg shadow-xl border border-gray-200">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">System Overview</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                        <!-- Key Metrics Card -->
+                        <div class="content-block-card">
+                            <img src="https://placehold.co/400x180/008000/FFFFFF?text=Key+Metrics" alt="Key Metrics Image">
+                            <div class="card-content">
+                                <h4>Key System Metrics</h4>
+                                <ul class="list-none space-y-1 text-gray-700 text-base pl-0">
+                                    <li>Total Farmers Reached: <span id="totalFarmersCount" class="font-bold text-blue-600 text-xl">0</span></li>
+                                    <li>Total Farm Size Managed: <span id="totalFarmSize" class="font-bold text-green-600 text-xl">0</span> acres</li>
+                                    <li>Average Farm Size: <span id="averageFarmSize" class="font-bold text-purple-600 text-xl">0</span> acres/farmer</li>
+                                    <li>Countries Covered: <span id="countriesCovered" class="font-bold text-red-600 text-xl">0</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Demographics Card -->
+                        <div class="content-block-card">
+                            <img src="https://placehold.co/400x180/FFD700/8B4513?text=Demographics" alt="Demographics Image">
+                            <div class="card-content">
+                                <h4>Farmer Demographics</h4>
+                                <p class="font-medium text-gray-700 text-base">Gender Distribution:</p>
+                                <ul id="dashboardGenderRatioList" class="list-none pl-0 text-gray-700 text-sm space-y-0.5">
+                                    <li>Female: 0%</li>
+                                    <li>Male: 0%</li>
+                                    <li>Other: 0%</li>
+                                </ul>
+                                <p class="font-medium text-gray-700 mt-4 text-base">Age Group Distribution:</p>
+                                <ul id="dashboardAgeDistributionList" class="list-none pl-0 text-gray-700 text-sm space-y-0.5">
+                                    <li>10-15: 0%</li>
+                                    <li>15-18: 0%</li>
+                                    <li>19-25: 0%</li>
+                                    <li>26-35: 0%</li>
+                                    <li>36-45: 0%</li>
+                                    <li>46-55: 0%</li>
+                                    <li>56-65: 0%</li>
+                                    <li>66+: 0%</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Top Crop Types Card -->
+                        <div class="content-block-card">
+                            <img src="https://placehold.co/400x180/ADD8E6/000080?text=Crop+Types" alt="Crop Types Image">
+                            <div class="card-content">
+                                <h4>Leading Crop Categories</h4>
+                                <ul id="topCropTypesList" class="list-none pl-0 text-gray-700 text-base">
+                                    <li>No crop data available.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Add New Farmer Section (original placement but adjusted for new grid layout) -->
+                <section class="bg-blue-50 p-6 rounded-lg shadow-md border border-blue-200">
+                    <h2 class="text-2xl font-semibold text-blue-800 mb-6">Add New Farmer</h2>
+                    <form id="addFarmerForm" class="space-y-4">
+                        <div id="formSuccessMessage" class="form-success-message hidden"></div>
+
+                        <div>
+                            <label for="idNumber" class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                            <input type="text" id="idNumber" name="idNumber" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="farmerName" class="block text-sm font-medium text-gray-700 mb-1">Farmer Name</label>
+                            <input type="text" id="farmerName" name="farmerName" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="organisationCBO" class="block text-sm font-medium text-gray-700 mb-1">Organisation/CBO</label>
+                            <input type="text" id="organisationCBO" name="organisationCBO"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">Telephone Number</label>
+                            <input type="tel" id="contactNumber" name="contactNumber"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400"
+                                   placeholder="+2547XXXXXXXX">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" name="email"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400"
+                                   placeholder="jeifferkilonzo51@gmail.com">
+                        </div>
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <select id="gender" name="gender" required
+                                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200">
+                                <option value="">Select Gender</option>
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ageGroup" class="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
+                            <select id="ageGroup" name="ageGroup" required
+                                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all duration-200">
+                                <option value="">Select Age Group</option>
+                                <option value="10-15">10-15</option>
+                                <option value="15-18">15-18</option>
+                                <option value="19-25">19-25</option>
+                                <option value="26-35">26-35</option>
+                                <option value="36-45">36-45</option>
+                                <option value="46-55">46-55</option>
+                                <option value="56-65">56-65</option>
+                                <option value="66+">66+</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="dataConsent" name="dataConsent" required
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="dataConsent" class="ml-2 block text-sm text-gray-900">
+                                I consent to my data being stored.
+                            </label>
+                        </div>
+                        <div>
+                            <label for="disability" class="block text-sm font-medium text-gray-700 mb-1">Disability (if any)</label>
+                            <input type="text" id="disability" name="disability"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="institution" class="block text-sm font-medium text-gray-700 mb-1">Institution (e.g., School, College)</label>
+                            <input type="text" id="institution" name="institution"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                            <input type="text" id="country" name="country" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200"
+                                   placeholder="e.g., Kenya">
+                        </div>
+                        <div>
+                            <label for="farmLocation" class="block text-sm font-medium text-gray-700 mb-1">Farm Location (e.g., Njoro, Nakuru)</label>
+                            <input type="text" id="farmLocation" name="farmLocation" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="projectName" class="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
+                            <input type="text" id="projectName" name="projectName"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="cropType" class="block text-sm font-medium text-gray-700 mb-1">Main Crop Type</label>
+                            <input type="text" id="cropType" name="cropType"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div>
+                            <label for="farmSize" class="block text-sm font-medium text-gray-700 mb-1">Farm Size (Acres)</label>
+                            <input type="number" id="farmSize" name="farmSize" step="0.1"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                            <button type="submit" id="addFarmerButton"
+                                    class="flex-1 inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                                Add Farmer
+                            </button>
+                            <button type="button" id="clearFormButton"
+                                    class="flex-1 inline-flex justify-center py-3 px-6 border border-gray-300 rounded-md shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                                Clear Form
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Farmer Records Content Section -->
+                <section id="contentFarmerRecords" class="bg-green-50 p-6 rounded-lg shadow-md border border-green-200 hidden">
+                    <h2 class="text-2xl font-semibold text-green-800 mb-6">Farmer Records</h2>
+                    <!-- Search Input for Farmer Records -->
+                    <div class="mb-4">
+                        <input type="text" id="farmerSearch" placeholder="Search by name, ID, or location..."
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm placeholder-gray-400 transition-all duration-200">
+                    </div>
+                    <!-- Display Area for Farmer Records -->
+                    <div id="farmerRecordsDisplay" class="space-y-4 max-h-96 overflow-y-auto scrollable-content">
+                        <p id="noRecordsMessage" class="text-gray-500 text-center py-4">No farmer records added yet.</p>
+                    </div>
+                </section>
+
+                <!-- Batch Entry Content Section (Hidden by default) -->
+                <section id="contentBatchEntry" class="bg-indigo-50 p-6 rounded-lg shadow-md border border-indigo-200 hidden">
+                    <h2 class="text-2xl font-semibold text-indigo-800 mb-6">Batch Farmer Entry</h2>
+                    <p class="text-sm text-gray-600 mb-4">Enter multiple farmer names, one per line or separated by commas. Other fields will use defaults.</p>
+                    <form id="batchFarmerForm" class="space-y-4">
+                        <div>
+                            <label for="batchNames" class="block text-sm font-medium text-gray-700 mb-1">Farmer Names</label>
+                            <textarea id="batchNames" name="batchNames" rows="10" required
+                                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-gray-400 transition-all duration-200"
+                                            placeholder="Farmer A, Farmer B, Farmer C&#10;Farmer D&#10;Farmer E"></textarea>
+                        </div>
+                        <button type="submit" id="addBatchFarmersButton"
+                                class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                            Add Multiple Farmers
+                        </button>
+                    </form>
+                    <p id="batchEntryMessage" class="text-sm mt-4"></p>
+                </section>
+
+                <!-- Offline Data Entry Content Section (New Section) -->
+                <section id="contentOfflineEntry" class="bg-blue-50 p-6 rounded-lg shadow-md border border-blue-200 hidden">
+                    <h2 class="text-2xl font-semibold text-blue-800 mb-6">Offline Farmer Data Entry</h2>
+                    <div id="offlineEntryMessage" class="form-success-message hidden mb-4"></div>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Enter farmer data here. It will be saved locally in your browser and synced to the main database when you go online and click "Sync Offline Data".
+                    </p>
+                    <form id="offlineAddFarmerForm" class="space-y-4">
+                        <div>
+                            <label for="offlineIdNumber" class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                            <input type="text" id="offlineIdNumber" name="idNumber" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineFarmerName" class="block text-sm font-medium text-gray-700 mb-1">Farmer Name</label>
+                            <input type="text" id="offlineFarmerName" name="farmerName" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineOrganisationCBO" class="block text-sm font-medium text-gray-700 mb-1">Organisation/CBO</label>
+                            <input type="text" id="offlineOrganisationCBO" name="organisationCBO"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineContactNumber" class="block text-sm font-medium text-gray-700 mb-1">Telephone Number</label>
+                            <input type="tel" id="offlineContactNumber" name="contactNumber"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400"
+                                   placeholder="+2547XXXXXXXX">
+                        </div>
+                        <div>
+                            <label for="offlineEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="offlineEmail" name="email"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400"
+                                   placeholder="farmer@example.com">
+                        </div>
+                        <div>
+                            <label for="offlineGender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <select id="offlineGender" name="gender"
+                                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Select Gender</option>
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="offlineAgeGroup" class="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
+                            <select id="offlineAgeGroup" name="ageGroup"
+                                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Select Age Group</option>
+                                <option value="10-15">10-15</option>
+                                <option value="15-18">15-18</option>
+                                <option value="19-25">19-25</option>
+                                <option value="26-35">26-35</option>
+                                <option value="36-45">36-45</option>
+                                <option value="46-55">46-55</option>
+                                <option value="56-65">56-65</option>
+                                <option value="66+">66+</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="offlineDataConsent" name="dataConsent" checked required
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="offlineDataConsent" class="ml-2 block text-sm text-gray-900">
+                                I consent to my data being stored (locally first).
+                            </label>
+                        </div>
+                        <div>
+                            <label for="offlineDisability" class="block text-sm font-medium text-gray-700 mb-1">Disability (if any)</label>
+                            <input type="text" id="offlineDisability" name="disability"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineInstitution" class="block text-sm font-medium text-gray-700 mb-1">Institution (e.g., School, College)</label>
+                            <input type="text" id="offlineInstitution" name="institution"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineCountry" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                            <input type="text" id="offlineCountry" name="country"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400"
+                                   placeholder="e.g., Kenya">
+                        </div>
+                        <div>
+                            <label for="offlineFarmLocation" class="block text-sm font-medium text-gray-700 mb-1">Farm Location (e.g., Njoro, Nakuru)</label>
+                            <input type="text" id="offlineFarmLocation" name="farmLocation" required
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineProjectName" class="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
+                            <input type="text" id="offlineProjectName" name="projectName"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineCropType" class="block text-sm font-medium text-gray-700 mb-1">Main Crop Type</label>
+                            <input type="text" id="offlineCropType" name="cropType"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="offlineFarmSize" class="block text-sm font-medium text-gray-700 mb-1">Farm Size (Acres)</label>
+                            <input type="number" id="offlineFarmSize" name="farmSize" step="0.1"
+                                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <button type="submit" id="saveOfflineFarmerButton"
+                                class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                            Save Data Offline
+                        </button>
+                    </form>
+
+                    <div class="border-t pt-6 mt-6 border-blue-300">
+                        <h3 class="text-xl font-semibold text-blue-700 mb-4">Pending Offline Records (<span id="offlineRecordsCount">0</span>)</h3>
+                        <button type="button" id="syncOfflineDataButton"
+                                class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 ease-in-out transform hover:scale-105 mb-6">
+                            <i class="fas fa-sync mr-2"></i> Sync Offline Data
+                            <i id="syncSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                        </button>
+                        <div id="offlineRecordsList" class="space-y-3 max-h-60 overflow-y-auto scrollable-content">
+                            <p id="noOfflineRecordsMessage" class="text-gray-500 text-center py-2">No offline records to sync.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Report Management Content Section -->
+                <section id="contentReportManagement" class="bg-yellow-50 p-6 rounded-lg shadow-md border border-yellow-200 hidden">
+                    <h2 class="text-2xl font-semibold text-yellow-800 mb-6">Report Management</h2>
+                    <button id="exportCsvButton"
+                            class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 ease-in-out transform hover:scale-105 mb-6">
+                        Export Farmer Data to CSV
+                    </button>
+
+                    <!-- Section for uploading new reports (initially hidden for non-super admins) -->
+                    <div id="uploadReportSection" class="hidden border-t pt-6 mt-6 border-yellow-300">
+                        <h3 class="text-xl font-semibold text-yellow-700 mb-4">Upload New Report</h3>
+                        <p class="text-sm text-gray-600 mb-4">Note: Actual file uploads require a backend server for storage.</p>
+                        <form id="uploadReportForm" class="space-y-4">
+                            <div>
+                                <label for="reportTitle" class="block text-sm font-medium text-gray-700 mb-1">Report Title</label>
+                                <input type="text" id="reportTitle" name="reportTitle" required
+                                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm placeholder-gray-400">
+                            </div>
+                            <div>
+                                <label for="reportFile" class="block text-sm font-medium text-gray-700 mb-1">Select Report File (PDF, DOCX, etc.)</label>
+                                <input type="file" id="reportFile" name="reportFile" accept=".pdf,.doc,.docx,.txt"
+                                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-yellow-200 file:text-yellow-800 hover:file:bg-yellow-300">
+                            </div>
+                            <button type="submit" id="uploadReportButton"
+                                                class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                                Upload Report (Demo)
+                            </button>
+                        </form>
+                        <p id="uploadReportMessage" class="text-sm mt-4"></p>
+                    </div>
+
+                    <!-- Display Area for Uploaded Reports -->
+                    <div class="border-t pt-6 mt-6 border-yellow-300">
+                        <h3 class="text-xl font-semibold text-yellow-700 mb-4">Uploaded Reports</h3>
+                        <div id="uploadedReportsList" class="space-y-3 max-h-60 overflow-y-auto scrollable-content">
+                            <p id="noUploadedReportsMessage" class="text-gray-500 text-center py-2">No reports uploaded yet.</p>
+                            </div>
+                    </div>
+
+                    <!-- New Section: Admin Session Records -->
+                    <div class="border-t pt-6 mt-6 border-yellow-300">
+                        <h3 class="text-xl font-semibold text-yellow-700 mb-4">Admin Session Records</h3>
+                        <div id="adminSessionRecordsList" class="space-y-3 max-h-60 overflow-y-auto scrollable-content">
+                            <p id="noAdminSessionsMessage" class="text-gray-500 text-center py-2">No admin sessions recorded yet.</p>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- Register Admin Content Section (Only visible to 'jeiffer' admin) -->
+                <section id="contentRegisterAdmin" class="bg-purple-50 p-6 rounded-lg shadow-md border border-purple-200 hidden">
+                    <h2 class="text-2xl font-semibold text-purple-800 mb-6">Register New Administrator</h2>
+                    <p class="text-sm text-purple-700 mb-4">
+                        New admins will receive a temporary login code via email (simulated).
+                    </p>
+                    <form id="registerAdminForm" class="space-y-4">
+                        <div>
+                            <label for="newAdminUsername" class="block text-sm font-medium text-gray-700 mb-1">New Username</label>
+                            <input type="text" id="newAdminUsername" name="newAdminUsername" required
+                                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="newAdminPassword" class="block text-sm font-medium text-gray-700 mb-1">Initial Password (will be replaced by code)</label>
+                            <input type="password" id="newAdminPassword" name="newAdminPassword" required
+                                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="newAdminEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="newAdminEmail" name="newAdminEmail" required
+                                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="newAdminContact" class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                            <input type="tel" id="newAdminContact" name="newAdminContact"
+                                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 sm:text-sm placeholder-gray-400">
+                        </div>
+                        <button type="submit"
+                                                class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 ease-in-out transform hover:scale-105">
+                            Register Admin
+                        </button>
+                    </form>
+                    <p id="registerAdminMessage" class="text-green-600 mt-4 text-sm"></p>
+
+                    <!-- Section to display active administrators -->
+                    <div class="border-t pt-6 mt-6 border-purple-300">
+                        <h3 class="text-xl font-semibold text-purple-700 mb-4">Active Administrators</h3>
+                        <div id="adminListDisplay" class="space-y-2 max-h-60 overflow-y-auto scrollable-content">
+                            <p id="noAdminsMessage" class="text-gray-500 text-center py-2">No additional admins registered.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Main Application Footer -->
+        <footer class="text-center text-gray-500 text-sm mt-8 pt-6 border-t border-gray-200">
+            <p>Powered by Jeiffer Kilonzo</p>
+            <p>&copy; Crop Solutions 2025. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Custom Message Modal (Hidden by default) -->
+    <div id="messageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <p id="modalMessage" class="text-gray-800 text-lg mb-4"></p>
+            <button id="closeModalButton" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- IMPORTANT: This is the updated client-side application. ---
+        // It now communicates with a PHP backend and MySQL database.
+        // Ensure your XAMPP Apache and MySQL are running and PHP files are in the same directory.
+
+        const BASE_URL = 'http://localhost/crop_solutions/'; // Adjust this if your folder name is different
+        const OFFLINE_FARMERS_KEY = 'cropSolutionsOfflineFarmers'; // Key for localStorage
+
+        let farmers = []; // Will be populated from the database
+        let uploadedReports = []; // Will be populated from the database
+        let adminSessions = []; // Will be populated from the database
+        let currentAdminLoggedInSessionId = null; // Store the session ID from the backend
+
+        let loggedInUser = {
+            id: null,
+            username: null,
+            email: null,
+            contact: null,
+            is_super_admin: false
+        };
+        let sessionStartTime = null; // Timestamp when session begins
+        let sessionTimerInterval = null; // Interval ID for the session timer
+
+        // --- DOM Element References ---
+        const adminLoginPage = document.getElementById('adminLoginPage');
+        const mainApp = document.getElementById('mainApp');
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password'); // This input will now accept password OR temporary code
+        const loginButton = document.getElementById('loginButton');
+        const loginButtonText = document.getElementById('loginButtonText');
+        const loginSpinner = document.getElementById('loginSpinner');
+        const loginMessage = document.getElementById('loginMessage');
+        const userLoginMessage = document.getElementById('userLoginMessage');
+        const loginTypeRadios = document.querySelectorAll('input[name="loginType"]');
+
+        const logoutButton = document.getElementById('logoutButton');
+        const currentAdminName = document.getElementById('currentAdminName');
+        const currentAdminEmail = document.getElementById('currentAdminEmail');
+        const currentAdminContact = document.getElementById('currentAdminContact');
+        const sessionTimerDisplay = document.getElementById('sessionTimerDisplay');
+
+        const addFarmerForm = document.getElementById('addFarmerForm');
+        const formSuccessMessage = document.getElementById('formSuccessMessage');
+        const clearFormButton = document.getElementById('clearFormButton');
+
+        const farmerRecordsDisplay = document.getElementById('farmerRecordsDisplay');
+        const noRecordsMessage = document.getElementById('noRecordsMessage');
+        const farmerSearch = document.getElementById('farmerSearch');
+
+
+        // Tab Buttons
+        const tabDashboard = document.getElementById('tabDashboard');
+        const tabFarmerRecords = document.getElementById('tabFarmerRecords');
+        const tabBatchEntry = document.getElementById('tabBatchEntry');
+        const tabOfflineEntry = document.getElementById('tabOfflineEntry'); // NEW
+        const tabReportManagement = document.getElementById('tabReportManagement');
+        const tabRegisterAdmin = document.getElementById('tabRegisterAdmin');
+
+        // Content Sections
+        const contentDashboard = document.getElementById('contentDashboard');
+        const contentFarmerRecords = document.getElementById('contentFarmerRecords');
+        const contentBatchEntry = document.getElementById('contentBatchEntry');
+        const contentOfflineEntry = document.getElementById('contentOfflineEntry'); // NEW
+        const contentReportManagement = document.getElementById('contentReportManagement');
+        const contentRegisterAdmin = document.getElementById('contentRegisterAdmin');
+
+        // Dashboard specific elements
+        const totalFarmersCount = document.getElementById('totalFarmersCount');
+        const dashboardGenderRatioList = document.getElementById('dashboardGenderRatioList');
+        const dashboardAgeDistributionList = document.getElementById('dashboardAgeDistributionList');
+        const totalFarmSize = document.getElementById('totalFarmSize');
+        const averageFarmSize = document.getElementById('averageFarmSize');
+        const countriesCovered = document.getElementById('countriesCovered');
+        const topCropTypesList = document.getElementById('topCropTypesList');
+
+
+        const batchFarmerForm = document.getElementById('batchFarmerForm');
+        const batchNamesTextarea = document.getElementById('batchNames');
+        const batchEntryMessage = document.getElementById('batchEntryMessage');
+
+        const exportCsvButton = document.getElementById('exportCsvButton');
+        const uploadReportForm = document.getElementById('uploadReportForm');
+        const uploadedReportsList = document.getElementById('uploadedReportsList');
+        const noUploadedReportsMessage = document.getElementById('noUploadedReportsMessage');
+        const uploadReportMessage = document.getElementById('uploadReportMessage');
+        const uploadReportSection = document.getElementById('uploadReportSection');
+        const adminSessionRecordsList = document.getElementById('adminSessionRecordsList');
+        const noAdminSessionsMessage = document.getElementById('noAdminSessionsMessage');
+
+        const registerAdminForm = document.getElementById('registerAdminForm');
+        const newAdminUsernameInput = document.getElementById('newAdminUsername');
+        const newAdminPasswordInput = document.getElementById('newAdminPassword');
+        const newAdminEmailInput = document.getElementById('newAdminEmail');
+        const newAdminContactInput = document.getElementById('newAdminContact');
+        const registerAdminMessage = document.getElementById('registerAdminMessage');
+        const adminListDisplay = document.getElementById('adminListDisplay');
+        const noAdminsMessage = document.getElementById('noAdminsMessage');
+
+        const messageModal = document.getElementById('messageModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const closeModalButton = document.getElementById('closeModalButton');
+
+        // NEW OFFLINE ENTRY ELEMENTS
+        const offlineAddFarmerForm = document.getElementById('offlineAddFarmerForm');
+        const offlineIdNumberInput = document.getElementById('offlineIdNumber');
+        const offlineFarmerNameInput = document.getElementById('offlineFarmerName');
+        const offlineOrganisationCBOInput = document.getElementById('offlineOrganisationCBO');
+        const offlineContactNumberInput = document.getElementById('offlineContactNumber');
+        const offlineEmailInput = document.getElementById('offlineEmail');
+        const offlineGenderSelect = document.getElementById('offlineGender');
+        const offlineAgeGroupSelect = document.getElementById('offlineAgeGroup');
+        const offlineDataConsentCheckbox = document.getElementById('offlineDataConsent');
+        const offlineDisabilityInput = document.getElementById('offlineDisability');
+        const offlineInstitutionInput = document.getElementById('offlineInstitution');
+        const offlineCountryInput = document.getElementById('offlineCountry');
+        const offlineFarmLocationInput = document.getElementById('offlineFarmLocation');
+        const offlineProjectNameInput = document.getElementById('offlineProjectName');
+        const offlineCropTypeInput = document.getElementById('offlineCropType');
+        const offlineFarmSizeInput = document.getElementById('offlineFarmSize');
+
+        const offlineEntryMessage = document.getElementById('offlineEntryMessage');
+        const offlineRecordsCount = document.getElementById('offlineRecordsCount');
+        const syncOfflineDataButton = document.getElementById('syncOfflineDataButton');
+        const syncSpinner = document.getElementById('syncSpinner');
+        const offlineRecordsList = document.getElementById('offlineRecordsList');
+        const noOfflineRecordsMessage = document.getElementById('noOfflineRecordsMessage');
+
+
+        // --- Helper Functions ---
+
+        /**
+         * Displays a custom modal with a given message.
+         * @param {string} message - The message to display in the modal.
+         */
+        function showMessageModal(message) {
+            modalMessage.textContent = message;
+            messageModal.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the custom modal.
+         */
+        function hideMessageModal() {
+            modalMessage.innerHTML = modalMessage.textContent; // Reset innerHTML in case buttons were added
+            messageModal.classList.add('hidden');
+        }
+
+        /**
+         * Displays a transient success message in a given element.
+         * @param {HTMLElement} element - The DOM element to display the message in.
+         * @param {string} message - The success message text.
+         */
+        function showSuccessMessage(element, message) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+            element.classList.add('show');
+            setTimeout(() => {
+                element.classList.remove('show');
+                element.classList.add('hidden');
+            }, 3000);
+        }
+
+        /**
+         * Fetches farmer data from the backend and updates the farmers array.
+         * @param {string} searchTerm - Optional search term.
+         */
+        async function fetchFarmers(searchTerm = '') {
+            try {
+                const response = await fetch(`${BASE_URL}get_farmers.php?search=${encodeURIComponent(searchTerm)}`);
+                const result = await response.json();
+                if (result.success) {
+                    farmers = result.farmers || [];
+                    displayFarmerRecords(searchTerm);
+                    renderDashboardStatistics();
+                } else {
+                    showMessageModal('Error fetching farmer records: ' + result.message);
+                    farmers = []; // Clear local data on error
+                    displayFarmerRecords(searchTerm); // Display empty state
+                    renderDashboardStatistics(); // Update dashboard with no data
+                }
+            } catch (error) {
+                console.error('Error fetching farmers:', error);
+                showMessageModal('Network error fetching farmers. Check server status.');
+                farmers = []; // Clear local data on error
+                displayFarmerRecords(searchTerm); // Display empty state
+                renderDashboardStatistics(); // Update dashboard with no data
+            }
+        }
+
+
+        /**
+         * Calculates and displays various statistics on the Dashboard.
+         */
+        function renderDashboardStatistics() {
+            const total = farmers.length;
+            totalFarmersCount.textContent = total;
+
+            let totalSize = 0;
+            const countries = new Set();
+            const cropTypes = {}; // To count occurrences of each crop
+            const genderCounts = { 'Female': 0, 'Male': 0, 'Other': 0 };
+            const ageGroupCounts = {
+                '10-15': 0, '15-18': 0, '19-25': 0, '26-35': 0,
+                '36-45': 0, '46-55': 0, '56-65': 0, '66+': 0
+            };
+
+            farmers.forEach(farmer => {
+                totalSize += (farmer.farm_size || 0);
+                if (farmer.country) countries.add(farmer.country);
+                if (farmer.crop_type) {
+                    const crop = farmer.crop_type.toLowerCase();
+                    cropTypes[crop] = (cropTypes[crop] || 0) + 1;
+                }
+                if (farmer.gender && genderCounts.hasOwnProperty(farmer.gender)) {
+                    genderCounts[farmer.gender]++;
+                }
+                if (farmer.age_group && ageGroupCounts.hasOwnProperty(farmer.age_group)) {
+                    ageGroupCounts[farmer.age_group]++;
+                }
+            });
+
+            totalFarmSize.textContent = totalSize.toFixed(2);
+            averageFarmSize.textContent = total > 0 ? (totalSize / total).toFixed(2) : '0';
+            countriesCovered.textContent = countries.size;
+
+            // Update gender ratio display list for dashboard
+            let genderHtml = '';
+            if (total === 0) {
+                genderHtml += '<li>No gender data available.</li>';
+            } else {
+                for (const gender in genderCounts) {
+                    const percentage = ((genderCounts[gender] / total) * 100).toFixed(1);
+                    genderHtml += `<li>${gender}: <span class="font-bold">${percentage}%</span></li>`;
+                }
+            }
+            dashboardGenderRatioList.innerHTML = genderHtml;
+
+            // Update age distribution display list for dashboard
+            let ageHtml = '';
+            const ageOrder = ["10-15", "15-18", "19-25", "26-35", "36-45", "46-55", "56-65", "66+"];
+            if (total === 0) {
+                ageHtml += '<li>No age group data available.</li>';
+            } else {
+                ageOrder.forEach(ageGroup => {
+                    const count = ageGroupCounts[ageGroup] || 0;
+                    const percentage = ((count / total) * 100).toFixed(1);
+                    ageHtml += `<li>${ageGroup}: <span class="font-bold">${percentage}%</span></li>`;
+                });
+            }
+            dashboardAgeDistributionList.innerHTML = ageHtml;
+
+
+            // Top Crop Types
+            const sortedCrops = Object.entries(cropTypes).sort(([, a], [, b]) => b - a);
+            let cropHtml = '';
+            if (sortedCrops.length === 0) {
+                cropHtml += '<li>No crop data available.</li>';
+            } else {
+                sortedCrops.slice(0, 3).forEach(([crop, count]) => {
+                    cropHtml += `<li>${crop.charAt(0).toUpperCase() + crop.slice(1)}: <span class="font-bold">${count} farmers</span></li>`;
+                });
+            }
+            topCropTypesList.innerHTML = cropHtml;
+        }
+
+        /**
+         * Renders the list of farmer records from in-memory 'farmers' array,
+         * applying a search filter.
+         * @param {string} searchTerm - The term to search for within farmer details.
+         */
+        function displayFarmerRecords(searchTerm = '') {
+            farmerRecordsDisplay.innerHTML = ''; // Clear existing records
+            const filteredFarmers = farmers.filter(farmer =>
+                Object.values(farmer).some(value =>
+                    String(value).toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            );
+
+            if (filteredFarmers.length === 0) {
+                noRecordsMessage.classList.remove('hidden');
+            } else {
+                noRecordsMessage.classList.add('hidden');
+                filteredFarmers.forEach(farmer => {
+                    const farmerCard = document.createElement('div');
+                    farmerCard.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center relative';
+                    const addedBy = farmer.registered_by_admin_username ? `Added by: ${farmer.registered_by_admin_username}` : 'N/A';
+                    const lastEditedAt = farmer.updated_at ? `Last Updated: ${new Date(farmer.updated_at).toLocaleString()}` : '';
+
+                    farmerCard.innerHTML = `
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">${farmer.farmer_name} <span class="text-gray-500 text-sm ml-2">(${farmer.id_number || 'N/A'})</span></h3>
+                            <p class="text-sm text-gray-600">Location: ${farmer.farm_location}</p>
+                            <p class="text-sm text-gray-600">Contact: ${farmer.contact_number || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Email: ${farmer.email || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Crop: ${farmer.crop_type || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Farm Size: ${farmer.farm_size || 'N/A'} acres</p>
+                            <p class="text-sm text-gray-600">Organisation: ${farmer.organisation_cbo || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Project: ${farmer.project_name || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Gender: ${farmer.gender || 'N/A'}, Age: ${farmer.age_group || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Disability: ${farmer.disability || 'None'}</p>
+                            <p class="text-sm text-gray-600">Institution: ${farmer.institution || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">Country: ${farmer.country || 'N/A'}</p>
+                            <p class="text-xs text-gray-400 mt-1">${addedBy} ${lastEditedAt}</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 flex space-x-2">
+                            <button data-id="${farmer.id}" class="edit-farmer-button px-3 py-1 bg-yellow-500 text-white rounded-md text-sm hover:bg-yellow-600 transition-colors duration-200">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button data-id="${farmer.id}" class="delete-farmer-button px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition-colors duration-200">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                    farmerRecordsDisplay.appendChild(farmerCard);
+                });
+
+                document.querySelectorAll('.edit-farmer-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const farmerId = event.currentTarget.dataset.id;
+                        editFarmer(parseInt(farmerId)); // Ensure ID is integer
+                    });
+                });
+                document.querySelectorAll('.delete-farmer-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const farmerId = event.currentTarget.dataset.id;
+                        deleteFarmer(parseInt(farmerId)); // Ensure ID is integer
+                    });
+                });
+            }
+        }
+
+
+        /**
+         * Populates the "Add New Farmer" form with data of a selected farmer for editing.
+         * @param {number} id - The unique ID of the farmer to edit.
+         */
+        function editFarmer(id) {
+            const farmer = farmers.find(f => f.id === id);
+            if (farmer) {
+                document.getElementById('idNumber').value = farmer.id_number || '';
+                document.getElementById('farmerName').value = farmer.farmer_name || '';
+                document.getElementById('organisationCBO').value = farmer.organisation_cbo || '';
+                document.getElementById('contactNumber').value = farmer.contact_number || '';
+                document.getElementById('email').value = farmer.email || '';
+                document.getElementById('gender').value = farmer.gender || '';
+                document.getElementById('ageGroup').value = farmer.age_group || '';
+                document.getElementById('disability').value = farmer.disability || '';
+                document.getElementById('institution').value = farmer.institution || '';
+                document.getElementById('country').value = farmer.country || '';
+                document.getElementById('farmLocation').value = farmer.farm_location || '';
+                document.getElementById('projectName').value = farmer.project_name || '';
+                document.getElementById('cropType').value = farmer.crop_type || '';
+                document.getElementById('farmSize').value = farmer.farm_size || '';
+                document.getElementById('dataConsent').checked = farmer.data_consent;
+
+                const addFarmerButton = document.getElementById('addFarmerButton');
+                addFarmerButton.textContent = 'Update Farmer';
+                addFarmerButton.dataset.editingId = id; // Store the ID for updating
+
+                addFarmerForm.scrollIntoView({ behavior: 'smooth' });
+                showMessageModal('Please update the farmer details and click "Update Farmer".');
+            } else {
+                showMessageModal('Farmer not found for editing.');
+            }
+        }
+
+        /**
+         * Deletes a farmer record from the database after user confirmation.
+         * @param {number} id - The unique ID of the farmer to delete.
+         */
+        function deleteFarmer(id) {
+            showMessageModal('Are you sure you want to delete this farmer record?');
+            modalMessage.innerHTML += `<div class="mt-4 flex justify-center space-x-4">
+                <button id="confirmDeleteButton" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Yes, Delete</button>
+                <button id="cancelDeleteButton" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Cancel</button>
+            </div>`;
+
+            document.getElementById('confirmDeleteButton').onclick = async () => {
+                hideMessageModal();
+                try {
+                    const response = await fetch(`${BASE_URL}delete_farmer.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showSuccessMessage(formSuccessMessage, result.message);
+                        fetchFarmers(farmerSearch.value); // Re-fetch and display
+                    } else {
+                        showMessageModal('Error deleting farmer: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting farmer:', error);
+                    showMessageModal('Network error deleting farmer. Check server status.');
+                }
+            };
+            document.getElementById('cancelDeleteButton').onclick = () => {
+                hideMessageModal();
+            };
+        }
+
+        /**
+         * Fetches report data from the backend and updates the uploadedReports array.
+         */
+        async function fetchReports() {
+            try {
+                const response = await fetch(`${BASE_URL}get_reports.php`);
+                const result = await response.json();
+                if (result.success) {
+                    uploadedReports = result.reports || [];
+                    renderUploadedReports();
+                } else {
+                    showMessageModal('Error fetching reports: ' + result.message);
+                    uploadedReports = []; // Clear local data on error
+                    renderUploadedReports(); // Display empty state
+                }
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+                showMessageModal('Network error fetching reports. Check server status.');
+                uploadedReports = []; // Clear local data on error
+                renderUploadedReports(); // Display empty state
+            }
+        }
+
+        /**
+         * Renders the list of simulated uploaded reports from in-memory 'uploadedReports' array.
+         */
+        function renderUploadedReports() {
+            uploadedReportsList.innerHTML = '';
+            if (uploadedReports.length === 0) {
+                noUploadedReportsMessage.classList.remove('hidden');
+            } else {
+                noUploadedReportsMessage.classList.add('hidden');
+                uploadedReports.forEach((report) => {
+                    const reportItem = document.createElement('div');
+                    reportItem.className = 'bg-white p-3 rounded-md shadow-sm border border-gray-200 flex justify-between items-center';
+
+                    // Conditionally render the delete button based on super admin status
+                    const deleteButtonHtml = loggedInUser.is_super_admin
+                        ? `<button data-id="${report.id}" class="delete-report-button px-2 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition-colors duration-200">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>`
+                        : '';
+
+                    reportItem.innerHTML = `
+                        <p class="text-gray-700 font-medium">${report.title}</p>
+                        <span class="text-sm text-gray-500">${report.file_name} - Uploaded by: ${report.uploaded_by || 'N/A'}</span>
+                        <div class="flex space-x-2">
+                            <a href="${BASE_URL}${report.file_path}" target="_blank" class="px-2 py-1 bg-blue-500 text-white rounded-md text-xs hover:bg-blue-600 transition-colors duration-200">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="${BASE_URL}${report.file_path}" download="${report.file_name}" class="px-2 py-1 bg-green-500 text-white rounded-md text-xs hover:bg-green-600 transition-colors duration-200">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            ${deleteButtonHtml}
+                        </div>
+                    `;
+                    uploadedReportsList.appendChild(reportItem);
+                });
+
+                document.querySelectorAll('.delete-report-button').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const reportId = event.currentTarget.dataset.id;
+                        try {
+                            const response = await fetch(`${BASE_URL}delete_report.php`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: parseInt(reportId) })
+                            });
+                            const result = await response.json();
+                            if (result.success) {
+                                showSuccessMessage(uploadReportMessage, result.message);
+                                fetchReports(); // Re-fetch and display
+                            } else {
+                                showMessageModal('Error deleting report: ' + result.message);
+                            }
+                        } catch (error) {
+                            console.error('Error deleting report:', error);
+                            showMessageModal('Network error deleting report. Check server status.');
+                        }
+                    });
+                });
+            }
+        }
+
+        /**
+         * Fetches admin session data from the backend and updates the adminSessions array.
+         */
+        async function fetchAdminSessions() {
+            try {
+                const response = await fetch(`${BASE_URL}get_admin_sessions.php`);
+                const result = await response.json();
+                if (result.success) {
+                    adminSessions = result.sessions || [];
+                    renderAdminSessions();
+                } else {
+                    showMessageModal('Error fetching admin sessions: ' + result.message);
+                    adminSessions = []; // Clear local data on error
+                    renderAdminSessions(); // Display empty state
+                }
+            } catch (error) {
+                console.error('Error fetching admin sessions:', error);
+                showMessageModal('Network error fetching admin sessions. Check server status.');
+                adminSessions = []; // Clear local data on error
+                renderAdminSessions(); // Display empty state
+            }
+        }
+
+        /**
+         * Renders the list of recorded admin sessions from the 'adminSessions' array.
+         */
+        function renderAdminSessions() {
+            adminSessionRecordsList.innerHTML = '';
+            if (adminSessions.length === 0) {
+                noAdminSessionsMessage.classList.remove('hidden');
+            } else {
+                noAdminSessionsMessage.classList.add('hidden');
+                // Sort sessions by login time, most recent first
+                const sortedSessions = [...adminSessions].sort((a, b) => new Date(b.login_time) - new Date(a.login_time));
+
+                sortedSessions.forEach(session => {
+                    const sessionItem = document.createElement('div');
+                    sessionItem.className = 'bg-white p-3 rounded-md shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center';
+                    // Format duration into HH:MM:SS
+                    const durationSeconds = session.session_duration_seconds || 0;
+                    const hours = Math.floor(durationSeconds / 3600);
+                    const minutes = Math.floor((durationSeconds % 3600) / 60);
+                    const seconds = Math.floor(durationSeconds % 60);
+                    const formattedDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                    sessionItem.innerHTML = `
+                        <div>
+                            <p class="text-gray-700 font-medium">Admin: ${session.username}</p>
+                            <p class="text-sm text-gray-600">Login Time: ${new Date(session.login_time).toLocaleString()}</p>
+                        </div>
+                        <p class="text-sm text-gray-800 mt-2 sm:mt-0">Duration: <span class="font-semibold">${formattedDuration}</span></p>
+                    `;
+                    adminSessionRecordsList.appendChild(sessionItem);
+                });
+            }
+        }
+
+
+        /**
+         * Fetches admin data from the backend and updates the admin list display.
+         */
+        async function fetchAdmins() {
+             try {
+                // You would need to create a `get_admins.php` file to fetch all admins.
+                // For simplicity in this example, we'll just show a placeholder or previously known admins.
+                // If you implemented `get_admins.php`, replace the dummy array below.
+                const response = await fetch(`${BASE_URL}get_admins.php`); // Assuming you create this endpoint
+                const result = await response.json();
+
+                if (result.success) {
+                    renderAdminList(result.admins); // Pass fetched admins
+                } else {
+                    showMessageModal('Could not fetch list of administrators from backend. Only initially hardcoded admins are shown if any. Error: ' + result.message);
+                    renderAdminList([]); // Clear if backend fetch fails
+                }
+            } catch (error) {
+                console.error('Error fetching admins:', error);
+                showMessageModal('Network error fetching administrators. Check server status.');
+                renderAdminList([]); // Clear if network error
+            }
+        }
+
+
+        /**
+         * Renders the list of administrators (from DB or client-side hardcoded).
+         * @param {Array} adminsToDisplay - Array of admin objects to render.
+         */
+        function renderAdminList(adminsToDisplay) {
+            adminListDisplay.innerHTML = '';
+            // For a fully backend-driven app, CLIENT_SIDE_ADMINS should be entirely replaced by DB data.
+            const allAdmins = adminsToDisplay && adminsToDisplay.length > 0 ? adminsToDisplay : [];
+
+            if (allAdmins.length === 0) {
+                noAdminsMessage.classList.remove('hidden');
+            } else {
+                noAdminsMessage.classList.add('hidden');
+                allAdmins.forEach(admin => {
+                    const adminItem = document.createElement('div');
+                    adminItem.className = 'bg-white p-2 rounded-md shadow-sm border border-gray-200 flex justify-between items-center';
+                    adminItem.innerHTML = `
+                        <p class="text-gray-700 font-medium">${admin.username} ${admin.is_super_admin ? '(Super Admin)' : ''}</p>
+                        <span class="text-sm text-gray-500">${admin.email || 'N/A'} | ${admin.contact_number || 'N/A'}</span>
+                    `;
+                    adminListDisplay.appendChild(adminItem);
+                });
+            }
+        }
+
+
+        /**
+         * Formats seconds into HH:MM:SS.
+         * @param {number} totalSeconds - The total number of seconds.
+         * @returns {string} Formatted time string (HH:MM:SS).
+         */
+        function formatTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        /**
+         * Starts the session timer display.
+         */
+        function startSessionTimerDisplay() {
+            if (sessionTimerInterval) {
+                clearInterval(sessionTimerInterval); // Clear any existing interval
+            }
+            sessionTimerInterval = setInterval(() => {
+                if (sessionStartTime) { // Only update if session has started
+                    const elapsedSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+                    sessionTimerDisplay.textContent = formatTime(elapsedSeconds);
+                }
+            }, 1000); // Update every second
+        }
+
+        /**
+         * Handles switching between different application tabs.
+         * @param {string} tabId - The ID of the tab to activate (e.g., 'tabFarmerRecords').
+         */
+        function switchTab(tabId) {
+            // Hide all content sections first
+            contentDashboard.classList.add('hidden');
+            contentFarmerRecords.classList.add('hidden');
+            contentBatchEntry.classList.add('hidden');
+            contentOfflineEntry.classList.add('hidden'); // NEW
+            contentReportManagement.classList.add('hidden');
+            contentRegisterAdmin.classList.add('hidden');
+
+            // Deactivate styling for all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active', 'bg-gray-600', 'text-white', 'bg-green-600', 'bg-indigo-600', 'bg-yellow-600', 'bg-purple-600', 'bg-blue-600');
+                button.classList.add('bg-gray-200', 'text-gray-700');
+            });
+
+
+            // Show the selected content section and apply active styling to its tab button
+            if (tabId === 'tabDashboard') {
+                contentDashboard.classList.remove('hidden');
+                tabDashboard.classList.add('active', 'bg-gray-600', 'text-white');
+                fetchFarmers(); // Refresh dashboard data
+            } else if (tabId === 'tabFarmerRecords') {
+                contentFarmerRecords.classList.remove('hidden');
+                tabFarmerRecords.classList.add('active', 'bg-green-600', 'text-white');
+                fetchFarmers(farmerSearch.value); // Ensure latest data is shown
+            } else if (tabId === 'tabBatchEntry') {
+                contentBatchEntry.classList.remove('hidden');
+                tabBatchEntry.classList.add('active', 'bg-indigo-600', 'text-white');
+            } else if (tabId === 'tabOfflineEntry') { // NEW
+                contentOfflineEntry.classList.remove('hidden');
+                tabOfflineEntry.classList.add('active', 'bg-blue-600', 'text-white');
+                renderOfflineFarmers(); // Render offline farmers when tab is opened
+            } else if (tabId === 'tabReportManagement') {
+                contentReportManagement.classList.remove('hidden');
+                tabReportManagement.classList.add('active', 'bg-yellow-600', 'text-white');
+                fetchReports(); // Ensure latest data is shown
+                fetchAdminSessions(); // Ensure latest session data is shown
+            } else if (tabId === 'tabRegisterAdmin') {
+                contentRegisterAdmin.classList.remove('hidden');
+                tabRegisterAdmin.classList.add('active', 'bg-purple-600', 'text-white');
+                fetchAdmins(); // Ensure latest admin list is shown
+            }
+        }
+
+        // --- Offline Functionality ---
+
+        /**
+         * Gets offline farmer records from localStorage.
+         * @returns {Array} An array of farmer data objects.
+         */
+        function getOfflineFarmers() {
+            const data = localStorage.getItem(OFFLINE_FARMERS_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        /**
+         * Saves an array of farmer records to localStorage.
+         * @param {Array} farmersArray - The array of farmer data objects to save.
+         */
+        function saveOfflineFarmers(farmersArray) {
+            localStorage.setItem(OFFLINE_FARMERS_KEY, JSON.stringify(farmersArray));
+            renderOfflineFarmers(); // Update display after saving
+        }
+
+        /**
+         * Adds a single farmer record to offline storage.
+         * @param {object} farmerData - The farmer data object to add.
+         */
+        function addOfflineFarmer(farmerData) {
+            const offlineFarmers = getOfflineFarmers();
+            offlineFarmers.push(farmerData);
+            saveOfflineFarmers(offlineFarmers);
+            showSuccessMessage(offlineEntryMessage, `Farmer "${farmerData.farmer_name}" saved offline!`);
+            offlineAddFarmerForm.reset(); // Clear the offline form
+        }
+
+        /**
+         * Renders the list of pending offline farmer records.
+         */
+        function renderOfflineFarmers() {
+            const offlineFarmers = getOfflineFarmers();
+            offlineRecordsList.innerHTML = '';
+            offlineRecordsCount.textContent = offlineFarmers.length;
+
+            if (offlineFarmers.length === 0) {
+                noOfflineRecordsMessage.classList.remove('hidden');
+                syncOfflineDataButton.disabled = true;
+                syncOfflineDataButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                noOfflineRecordsMessage.classList.add('hidden');
+                syncOfflineDataButton.disabled = false;
+                syncOfflineDataButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                offlineFarmers.forEach((farmer, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'bg-gray-100 p-2 rounded-md border border-gray-300 flex justify-between items-center';
+                    item.innerHTML = `
+                        <p class="text-sm text-gray-700 font-medium">${farmer.farmer_name} (${farmer.id_number || 'N/A'})</p>
+                        <button data-index="${index}" class="remove-offline-farmer-button px-2 py-1 bg-red-400 text-white rounded-md text-xs hover:bg-red-500 transition-colors duration-200">
+                            Remove
+                        </button>
+                    `;
+                    offlineRecordsList.appendChild(item);
+                });
+
+                document.querySelectorAll('.remove-offline-farmer-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const indexToRemove = parseInt(event.currentTarget.dataset.index);
+                        removeOfflineFarmerByIndex(indexToRemove);
+                    });
+                });
+            }
+        }
+
+        /**
+         * Removes an offline farmer record by its index.
+         * @param {number} index - The index of the farmer to remove.
+         */
+        function removeOfflineFarmerByIndex(index) {
+            const offlineFarmers = getOfflineFarmers();
+            if (index > -1 && index < offlineFarmers.length) {
+                offlineFarmers.splice(index, 1);
+                saveOfflineFarmers(offlineFarmers);
+                showMessageModal('Offline record removed.');
+            }
+        }
+
+        /**
+         * Synchronizes offline farmer data with the backend database.
+         */
+        async function syncOfflineFarmers() {
+            const offlineFarmers = getOfflineFarmers();
+            if (offlineFarmers.length === 0) {
+                showMessageModal('No offline records to sync!');
+                return;
+            }
+
+            if (!navigator.onLine) {
+                showMessageModal('You are currently offline. Cannot sync data.');
+                return;
+            }
+
+            syncOfflineDataButton.disabled = true;
+            syncSpinner.classList.remove('hidden');
+            let successfulSyncs = 0;
+            let failedSyncs = [];
+            let farmersToKeepOffline = []; // Farmers that failed to sync
+
+            // Process each offline farmer
+            for (const farmerData of offlineFarmers) {
+                try {
+                    // Send to the same add_farmer.php endpoint.
+                    // The backend should handle duplicate ID_numbers or other constraints if any.
+                    const response = await fetch(`${BASE_URL}add_farmer.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(farmerData)
+                    });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        successfulSyncs++;
+                    } else {
+                        failedSyncs.push(`Failed to sync "${farmerData.farmer_name}": ${result.message}`);
+                        farmersToKeepOffline.push(farmerData); // Keep this farmer in offline storage
+                    }
+                } catch (error) {
+                    console.error('Sync error for farmer:', farmerData.farmer_name, error);
+                    failedSyncs.push(`Network error syncing "${farmerData.farmer_name}".`);
+                    farmersToKeepOffline.push(farmerData); // Keep this farmer in offline storage
+                }
+            }
+
+            syncSpinner.classList.add('hidden');
+            syncOfflineDataButton.disabled = false;
+
+            // Update local storage with only the failed/remaining farmers
+            saveOfflineFarmers(farmersToKeepOffline);
+
+            if (successfulSyncs > 0) {
+                showSuccessMessage(offlineEntryMessage, `Successfully synced ${successfulSyncs} farmer(s).`);
+                fetchFarmers(); // Refresh main farmer records display
+            }
+
+            if (failedSyncs.length > 0) {
+                let errorMessage = `Failed to sync ${failedSyncs.length} farmer(s):\n${failedSyncs.join('\n')}`;
+                showMessageModal(errorMessage);
+            } else if (successfulSyncs === 0 && offlineFarmers.length > 0) { // All offline farmers failed to sync
+                showMessageModal('No farmers were synced. Please check network and server.');
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            adminLoginPage.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
+            loginMessage.textContent = '';
+            document.querySelector('input[name="loginType"][value="admin"]').checked = true;
+            userLoginMessage.classList.add('hidden');
+            loginButton.disabled = false;
+            loginButton.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            renderOfflineFarmers(); // Load and display any pending offline records
+        });
+
+        // Close button for the custom message modal
+        closeModalButton.addEventListener('click', hideMessageModal);
+
+        // Listener for login type radio buttons (Admin vs. Regular User)
+        loginTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'user') {
+                    userLoginMessage.classList.remove('hidden');
+                    loginButton.disabled = true;
+                    loginButton.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    userLoginMessage.classList.add('hidden');
+                    loginButton.disabled = false;
+                    loginButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        });
+
+        // Login Form Submission
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = usernameInput.value.trim();
+            const inputCredential = passwordInput.value.trim(); // This can be password or temporary code
+
+            loginMessage.textContent = '';
+            loginButtonText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
+            loginButton.disabled = true;
+
+            const loginType = document.querySelector('input[name="loginType"]:checked').value;
+            if (loginType !== 'admin') {
+                loginMessage.textContent = 'Regular user login is not implemented in this version.';
+                loginButtonText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+                loginButton.disabled = false;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}login.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: username, password: inputCredential }) // Sending 'password' field, PHP will interpret as password/code
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    loggedInUser = result.admin;
+                    currentAdminLoggedInSessionId = result.session_id; // Get session ID from backend
+                    sessionStartTime = Date.now(); // Use current time for simplicity here, could use login_time from DB if returned
+
+                    startSessionTimerDisplay();
+
+                    adminLoginPage.classList.add('fade-out');
+                    setTimeout(() => {
+                        adminLoginPage.classList.add('hidden');
+                        mainApp.classList.remove('hidden');
+
+                        currentAdminName.textContent = loggedInUser.username;
+                        currentAdminEmail.textContent = loggedInUser.email || 'N/A';
+                        currentAdminContact.textContent = loggedInUser.contact_number || 'N/A';
+
+                        if (loggedInUser.is_super_admin) {
+                            tabRegisterAdmin.classList.remove('hidden');
+                            uploadReportSection.classList.remove('hidden');
+                        } else {
+                            tabRegisterAdmin.classList.add('hidden');
+                            uploadReportSection.classList.add('hidden');
+                        }
+                        switchTab('tabDashboard'); // Set Dashboard as the default active tab after login
+                    }, 500);
+                } else {
+                    loginMessage.textContent = result.message;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginMessage.textContent = 'Network error. Could not connect to the server.';
+            } finally {
+                loginButtonText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
+                loginButton.disabled = false;
+            }
+        });
+
+        // Logout Button Click
+        logoutButton.addEventListener('click', async () => {
+            if (sessionTimerInterval) {
+                clearInterval(sessionTimerInterval);
+            }
+
+            // Update session duration in the database if a session ID exists
+            if (currentAdminLoggedInSessionId) {
+                const logoutTime = new Date().toISOString();
+                const elapsedSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+                try {
+                    await fetch(`${BASE_URL}update_session_logout_time.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            sessionId: currentAdminLoggedInSessionId,
+                            logoutTime: logoutTime,
+                            sessionDurationSeconds: elapsedSeconds
+                        })
+                    });
+                    fetchAdminSessions(); // Re-fetch sessions to show updated duration
+                } catch (error) {
+                    console.error('Error updating session logout time:', error);
+                }
+            }
+
+            // Clear client-side session data
+            loggedInUser = { id: null, username: null, email: null, contact: null, is_super_admin: false };
+            sessionStartTime = null;
+            currentAdminLoggedInSessionId = null;
+            sessionTimerDisplay.textContent = '00:00:00';
+
+            // Show login page and hide main app
+            mainApp.classList.add('hidden');
+            adminLoginPage.classList.remove('hidden', 'fade-out');
+            usernameInput.value = '';
+            passwordInput.value = '';
+            loginMessage.textContent = '';
+            document.querySelector('input[name="loginType"][value="admin"]').checked = true;
+            userLoginMessage.classList.add('hidden');
+            loginButton.disabled = false;
+            loginButton.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            showMessageModal('You have been logged out.');
+        });
+
+        // Add/Update Farmer Form Submission (Main Form)
+        addFarmerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const addFarmerButton = document.getElementById('addFarmerButton');
+            const editingId = addFarmerButton.dataset.editingId;
+
+            if (!document.getElementById('dataConsent').checked) {
+                showMessageModal('You must consent to data storage to add/update a farmer.');
+                return;
+            }
+
+            const farmerData = {
+                id_number: document.getElementById('idNumber').value.trim(),
+                farmer_name: document.getElementById('farmerName').value.trim(),
+                organisation_cbo: document.getElementById('organisationCBO').value.trim(),
+                contact_number: document.getElementById('contactNumber').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                gender: document.getElementById('gender').value,
+                age_group: document.getElementById('ageGroup').value,
+                data_consent: document.getElementById('dataConsent').checked,
+                disability: document.getElementById('disability').value.trim(),
+                institution: document.getElementById('institution').value.trim(),
+                country: document.getElementById('country').value.trim(),
+                farm_location: document.getElementById('farmLocation').value.trim(),
+                project_name: document.getElementById('projectName').value.trim(),
+                crop_type: document.getElementById('cropType').value.trim(),
+                farm_size: parseFloat(document.getElementById('farmSize').value) || 0,
+                registered_by_admin_username: loggedInUser.username
+            };
+
+            let endpoint = '';
+            let method = 'POST';
+
+            if (editingId) {
+                endpoint = 'update_farmer.php';
+                farmerData.id = parseInt(editingId); // Add the ID for update
+            } else {
+                endpoint = 'add_farmer.php';
+            }
+
+            if (!navigator.onLine && !editingId) { // If offline and not editing, save to offline storage
+                addOfflineFarmer(farmerData);
+                showSuccessMessage(formSuccessMessage, `Farmer "${farmerData.farmer_name}" saved offline (network unavailable)!`);
+                addFarmerForm.reset();
+                addFarmerButton.textContent = 'Add Farmer';
+                delete addFarmerButton.dataset.editingId;
+                return; // Stop here, don't try to send to backend
+            }
+
+            // Proceed with online submission
+            try {
+                const response = await fetch(`${BASE_URL}${endpoint}`, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(farmerData)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccessMessage(formSuccessMessage, result.message);
+                    addFarmerForm.reset();
+                    addFarmerButton.textContent = 'Add Farmer';
+                    delete addFarmerButton.dataset.editingId;
+                    fetchFarmers(farmerSearch.value); // Re-fetch and display latest data
+                } else {
+                    showMessageModal('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Farmer operation error:', error);
+                showMessageModal('Network error during farmer operation. Check server status.');
+            }
+        });
+
+        // Clear Form Button Click
+        clearFormButton.addEventListener('click', () => {
+            addFarmerForm.reset();
+            const addFarmerButton = document.getElementById('addFarmerButton');
+            addFarmerButton.textContent = 'Add Farmer';
+            delete addFarmerButton.dataset.editingId;
+            formSuccessMessage.classList.add('hidden');
+        });
+
+        // Farmer Search Input
+        farmerSearch.addEventListener('input', (event) => {
+            fetchFarmers(event.target.value); // Fetch and filter live from backend
+        });
+
+        // Tab Button Click Listeners
+        tabDashboard.addEventListener('click', () => switchTab('tabDashboard'));
+        tabFarmerRecords.addEventListener('click', () => switchTab('tabFarmerRecords'));
+        tabBatchEntry.addEventListener('click', () => switchTab('tabBatchEntry'));
+        tabOfflineEntry.addEventListener('click', () => switchTab('tabOfflineEntry')); // NEW
+        tabReportManagement.addEventListener('click', () => switchTab('tabReportManagement'));
+        tabRegisterAdmin.addEventListener('click', () => {
+            if (loggedInUser.is_super_admin) {
+                switchTab('tabRegisterAdmin');
+            } else {
+                showMessageModal('Permission denied. Only Super Admins can register new administrators.');
+            }
+        });
+
+        // Batch Farmer Entry Form Submission
+        batchFarmerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const namesInput = batchNamesTextarea.value.trim();
+
+            if (!namesInput) {
+                showMessageModal('Please enter farmer names for batch entry.');
+                return;
+            }
+
+            const nameArray = namesInput.split(/[\n,]+/).map(name => name.trim()).filter(name => name !== '');
+            let addedCount = 0;
+            let errors = [];
+
+            // Process each farmer name in batch
+            for (const name of nameArray) {
+                const farmerData = {
+                    id_number: 'BATCH-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6), // Generate a unique ID
+                    farmer_name: name,
+                    organisation_cbo: 'N/A (Batch)',
+                    contact_number: 'N/A',
+                    email: 'N/A',
+                    gender: 'N/A',
+                    age_group: 'N/A',
+                    data_consent: true,
+                    disability: 'None',
+                    institution: 'N/A',
+                    country: 'Kenya',
+                    farm_location: 'N/A (Batch)',
+                    project_name: 'N/A',
+                    crop_type: 'N/A',
+                    farm_size: 0,
+                    registered_by_admin_username: loggedInUser.username // Assign current user
+                };
+
+                // Check network status for batch entry
+                if (!navigator.onLine) {
+                    addOfflineFarmer(farmerData); // Save to offline storage if offline
+                    addedCount++; // Count as "added" even if offline
+                    continue; // Skip backend call
+                }
+
+                try {
+                    const response = await fetch(`${BASE_URL}add_farmer.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(farmerData)
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        addedCount++;
+                    } else {
+                        errors.push(`Failed to add "${name}": ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error(`Error adding batch farmer "${name}":`, error);
+                    errors.push(`Network error adding "${name}".`);
+                }
+            }
+
+            if (addedCount > 0) {
+                showSuccessMessage(batchEntryMessage, `Successfully processed ${addedCount} farmers! Some might be saved offline.`);
+                batchNamesTextarea.value = '';
+                fetchFarmers(farmerSearch.value); // Re-fetch and display latest data
+                renderOfflineFarmers(); // Update offline display
+            } else if (errors.length > 0) {
+                showMessageModal('Batch entry completed with errors. See console for details.');
+            } else {
+                showMessageModal('No valid farmer names were entered for batch entry, or all failed.');
+            }
+        });
+
+        // Export CSV Button Click
+        exportCsvButton.addEventListener('click', async () => {
+            // Re-fetch all farmers to ensure all data is included, not just filtered
+            await fetchFarmers(''); // Fetch all farmers without a search term
+
+            if (farmers.length === 0) {
+                showMessageModal('No farmer records to export.');
+                return;
+            }
+
+            const headers = [
+                "ID", "ID Number", "Farmer Name", "Organisation/CBO", "Telephone Number", "Email",
+                "Gender", "Age Group", "Data Consent", "Disability", "Institution",
+                "Country", "Farm Location", "Project Name", "Main Crop Type", "Farm Size (Acres)",
+                "Registered By Admin Username", "Created At", "Updated At"
+            ];
+            const csvRows = [];
+            csvRows.push(headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','));
+
+            farmers.forEach(farmer => {
+                const row = [
+                    farmer.id,
+                    `"${farmer.id_number || ''}"`,
+                    `"${farmer.farmer_name || ''}"`,
+                    `"${farmer.organisation_cbo || ''}"`,
+                    `"${farmer.contact_number || ''}"`,
+                    `"${farmer.email || ''}"`,
+                    `"${farmer.gender || ''}"`,
+                    `"${farmer.age_group || ''}"`,
+                    farmer.data_consent ? 'Yes' : 'No',
+                    `"${farmer.disability || ''}"`,
+                    `"${farmer.institution || ''}"`,
+                    `"${farmer.country || ''}"`,
+                    `"${farmer.farm_location || ''}"`,
+                    `"${farmer.project_name || ''}"`,
+                    `"${farmer.crop_type || ''}"`,
+                    farmer.farm_size,
+                    `"${farmer.registered_by_admin_username || ''}"`,
+                    `"${farmer.created_at || ''}"`,
+                    `"${farmer.updated_at || ''}"`
+                ].map(item => {
+                    const stringItem = String(item);
+                    // Handle commas and double quotes within string items for CSV
+                    return `"${stringItem.replace(/"/g, '""')}"`;
+                }).join(',');
+                csvRows.push(row);
+            });
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', 'farmer_data.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showSuccessMessage(uploadReportMessage, 'Farmer data exported to CSV successfully!');
+        });
+
+        // Upload Report Form Submission
+        uploadReportForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const reportTitle = document.getElementById('reportTitle').value.trim();
+            const reportFile = document.getElementById('reportFile').files[0];
+
+            if (!reportTitle || !reportFile) {
+                showMessageModal('Please provide both a report title and select a file.');
+                return;
+            }
+
+            // Use FormData for file uploads
+            const formData = new FormData();
+            formData.append('reportTitle', reportTitle);
+            formData.append('reportFile', reportFile);
+            formData.append('uploadedBy', loggedInUser.username); // Pass current user
+
+            if (!navigator.onLine) {
+                 showMessageModal('You are offline. Cannot upload files to the server.');
+                 return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}upload_report.php`, {
+                    method: 'POST',
+                    body: formData // No Content-Type header needed; browser sets it for FormData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccessMessage(uploadReportMessage, result.message);
+                    uploadReportForm.reset();
+                    fetchReports(); // Re-fetch and display latest reports
+                } else {
+                    showMessageModal('Error uploading report: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Report upload error:', error);
+                showMessageModal('Network error during report upload. Check server status.');
+            }
+        });
+
+        // Register Admin Form Submission
+        registerAdminForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!loggedInUser.is_super_admin) {
+                showMessageModal('Permission denied. Only Super Admins can register new admin accounts.');
+                return;
+            }
+
+            const newAdminUsername = newAdminUsernameInput.value.trim();
+            const newAdminPassword = newAdminPasswordInput.value.trim(); // This will be the initial password stored, but login will use code
+            const newAdminEmail = newAdminEmailInput.value.trim() || null;
+            const newAdminContact = newAdminContactInput.value.trim() || null;
+
+            if (!newAdminUsername || !newAdminPassword || !newAdminEmail) {
+                showMessageModal('Please enter a username, initial password, and email for the new admin.');
+                return;
+            }
+
+            if (!navigator.onLine) {
+                 showMessageModal('You are offline. Cannot register new admins.');
+                 return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}register_admin.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: newAdminUsername,
+                        password: newAdminPassword,
+                        email: newAdminEmail,
+                        contact_number: newAdminContact,
+                        is_super_admin: false
+                    })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update success message to reflect the email/code login
+                    showSuccessMessage(registerAdminMessage, `${result.message} They should use the temporary code sent to their email to log in.`);
+                    registerAdminForm.reset();
+                    fetchAdmins(); // Re-fetch and display latest admin list
+                } else {
+                    showMessageModal('Error registering admin: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Admin registration error:', error);
+                showMessageModal('Network error during admin registration. Check server status.');
+
+            }
+        });
+
+        // Offline Add Farmer Form Submission
+        offlineAddFarmerForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (!offlineDataConsentCheckbox.checked) {
+                showMessageModal('You must consent to data storage to save offline.');
+                return;
+            }
+
+            // Capture all fields from the offline form
+            const farmerData = {
+                id_number: offlineIdNumberInput.value.trim(),
+                farmer_name: offlineFarmerNameInput.value.trim(),
+                organisation_cbo: offlineOrganisationCBOInput.value.trim() || 'N/A (Offline)',
+                contact_number: offlineContactNumberInput.value.trim() || 'N/A',
+                email: offlineEmailInput.value.trim() || 'N/A',
+                gender: offlineGenderSelect.value || 'N/A',
+                age_group: offlineAgeGroupSelect.value || 'N/A',
+                data_consent: offlineDataConsentCheckbox.checked,
+                disability: offlineDisabilityInput.value.trim() || 'None',
+                institution: offlineInstitutionInput.value.trim() || 'N/A',
+                country: offlineCountryInput.value.trim() || 'Kenya',
+                farm_location: offlineFarmLocationInput.value.trim(),
+                project_name: offlineProjectNameInput.value.trim() || 'N/A',
+                crop_type: offlineCropTypeInput.value.trim() || 'N/A',
+                farm_size: parseFloat(offlineFarmSizeInput.value) || 0,
+                registered_by_admin_username: loggedInUser.username || 'Offline User', // Use loggedInUser or generic
+                created_at: new Date().toISOString(), // Timestamp for offline entry
+            };
+
+            addOfflineFarmer(farmerData);
+        });
+
+        // Sync Offline Data Button Click
+        syncOfflineDataButton.addEventListener('click', syncOfflineFarmers);
+
+        // Listen for online/offline events to provide better user feedback
+        window.addEventListener('online', () => {
+            showMessageModal('You are back online! Consider syncing any pending offline data.');
+            renderOfflineFarmers(); // Re-render to enable sync button if applicable
+        });
+        window.addEventListener('offline', () => {
+            showMessageModal('You are now offline. Data entered will be saved locally.');
+            renderOfflineFarmers(); // Re-render to disable sync button if applicable
+        });
+
+    </script>
+</body>
+</html>
